@@ -1,0 +1,188 @@
+{
+  "basePath": "/api/v2/",
+  "definitions": {
+    "Application Health": {},
+    "Replication Application": {},
+    "Replication Application Deployment": {},
+    "Replication Application Deployments": {},
+    "Replication Applications": {}
+  },
+  "host": "rest.striim.com",
+  "info": {
+    "description": "Striim Replication API allows you to manage the lifecycle of replication service of Striim",
+    "title": "replicationapps",
+    "version": ""
+  },
+  "paths": {
+    "/replicationapp/{appname}": {
+      "delete": {
+        "description": "Deletes the application details along with source and target details. The application\nneeds to be in undeployed state for this to succeed",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "examples": {
+              "application/json": {}
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "examples": {},
+            "headers": {}
+          },
+          "412": {
+            "description": "Precondition Failed",
+            "examples": {},
+            "headers": {}
+          }
+        },
+        "summary": "Drop Application",
+        "tags": []
+      },
+      "get": {
+        "description": "Retrieves the application details along with source and target details",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "examples": {},
+            "headers": {}
+          }
+        },
+        "summary": "Get Application Details",
+        "tags": []
+      }
+    },
+    "/replicationapp/{appname}/deployment/{id}": {
+      "delete": {
+        "description": "Stops a running replication",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "examples": {},
+            "headers": {}
+          }
+        },
+        "summary": "Stop Application",
+        "tags": []
+      },
+      "post": {
+        "description": "Starts a deployed replication application to replicate from configured source to target",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "examples": {},
+            "headers": {}
+          }
+        },
+        "summary": "Start application",
+        "tags": []
+      }
+    },
+    "/replicationapp/{appname}/deployments": {
+      "delete": {
+        "description": "Undeploys a physical deployment of replication application",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "examples": {},
+            "headers": {}
+          }
+        },
+        "summary": "Undeploy Application",
+        "tags": []
+      },
+      "get": {
+        "description": "Retrieves Deployment option for this application",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "examples": {
+              "application/json": {
+                "deploymentgroups": [
+                  "agent",
+                  "default"
+                ]
+              }
+            },
+            "headers": {}
+          }
+        },
+        "summary": "Retrieve Deployment options",
+        "tags": []
+      },
+      "post": {
+        "description": "Deploys a logical replication application to physical striim cluster , ready to be started",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "examples": {},
+            "headers": {}
+          }
+        },
+        "summary": "Deploy",
+        "tags": []
+      }
+    },
+    "/replicationapp/{appname}/health": {
+      "get": {
+        "description": "Retrieves the health of a running replication application",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "examples": {},
+            "headers": {}
+          }
+        },
+        "summary": "Gets the Health of Running application",
+        "tags": []
+      }
+    },
+    "/replicationapps": {
+      "get": {
+        "description": "Lists all replication applications in the system",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "examples": {},
+            "headers": {}
+          }
+        },
+        "summary": "List All replication apps",
+        "tags": []
+      },
+      "post": {
+        "description": "Creates a new replication application. Takes a JSON object containing source and\ntarget database details and other application configuration",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "examples": {
+              "application/json": {
+                "name": "OnPremiseOraToSqlServeronAzure",
+                "namespace": "admin",
+                "status": "Created",
+                "uuid": "23dfa22-fabc-2422"
+              }
+            },
+            "headers": {}
+          }
+        },
+        "summary": "Creates a New replication app",
+        "tags": []
+      }
+    }
+  },
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0"
+}
