@@ -1,0 +1,243 @@
+FORMAT: 1A
+HOST: http://rest.striim.com/api/v2/
+
+# replicationapps
+
+Striim Replication API allows you to manage the lifecycle of replication service of Striim 
+
+## Replication Applications [/replicationapps]
+
+### List All replication apps [GET]
+Lists all replication applications in the system
++ Response 200 (application/json)
+
+        [
+            {
+                "name": "PosApp",
+                "uri": "http://rest.striim.com/api/v2/replicationapp/admin.PosApp",
+                "uuid": "23dfa22-fabc-2422",
+                "namespace":"admin",
+                "status" : "Running" 
+            },
+            {
+                "name": "OraToSQLServer",
+                "uri": "http://rest.striim.com/api/v2/replicationapp/admin.OraToSQLServer",
+                "uuid": "23dfa22-fabc-2422",
+                "namespace":"admin",
+                "status" : "Deployed" 
+            },
+            {
+                "name": "MySqlToSQLServer",
+                "uri": "http://rest.striim.com/api/v2/replicationapp/admin.MySqlToSQLServer",
+                "uuid": "23dfa22-fabc-2422",
+                "namespace":"admin",
+                "status" : "Deployed" 
+            },
+        ]
+
+### Creates a New replication app [POST]
+
+Creates a new replication application. Takes a JSON object containing source and
+target database details and other application configuration
+
++ Request (application/json)
+
+        {
+            "configuration" :{
+                "name":"OnPremiseOraToSqlServeronAzure",
+                "namespace":"admin",
+                "recovery":"On"
+            },
+            "source" :{
+                "adapter":"OracleReader",
+                "properties": {
+                    "Username":"qatest",
+                    "Password":"qatest",
+                    "ConnectionURL":"192.168.123.21:1521:orcl",
+                    "Tables":"QATEST.POSTABLE_1;QATEST.POSTABLE_2;QATEST.POSTABLE_3;QATEST.POSTABLE_4",
+                    "OnlineCatalog":"true",
+                    "FetchSize":1,
+                    "QueueSize":40000,
+                    "Compression":true,
+                    "SkipOpenTransactions":false,
+                    "DDLTracking":False
+                }
+            },
+            "target" :{
+                "adapter":"DatabaseWriter",
+                "properties": {
+                    "ConnectionURL":"jdbc:oracle:thin:@10.1.110.128:1521:orcl",
+                    "Username":"qatest",
+                    "Password":"qatest",
+                    "BatchPolicy":"Count:0,Interval:0",
+                    "Tables": "dbo.mssqlsourcetbl,QATEST.ORACLETARGETTBL"
+                }
+            }
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /replicationsapps/admin.OnPremiseOraToSqlServeronAzure
+    
+    + Body
+
+            {
+                "name": "OnPremiseOraToSqlServeronAzure",
+                "uuid": "23dfa22-fabc-2422",
+                "namespace":"admin",
+                "status" : "Created" 
+            }
+
+## Replication Application [/replicationapp/{appname}]
+
+A Replication Application resource represents the replication model from a specific source
+to target database
+
+### Get Application Details [GET]
+
+Retrieves the application details along with source and target details
+
++ Response 200 (application/json)
+
+    + Body
+    
+            {
+                "configuration" :{
+                    "name":"OnPremiseOraToSqlServeronAzure",
+                    "namespace":"admin",
+                    "recovery":"On"
+                },
+                "source" :{
+                    "adapter":"OracleReader",
+                    "properties": {
+                        "Username":"qatest",
+                        "Password":"qatest",
+                        "ConnectionURL":"192.168.123.21:1521:orcl",
+                        "Tables":"QATEST.POSTABLE_1;QATEST.POSTABLE_2;QATEST.POSTABLE_3;QATEST.POSTABLE_4",
+                        "OnlineCatalog":"true",
+                        "FetchSize":1,
+                        "QueueSize":40000,
+                        "Compression":true,
+                        "SkipOpenTransactions":false,
+                        "DDLTracking":False
+                    }
+                },
+                "target" :{
+                    "adapter":"DatabaseWriter",
+                    "properties": {
+                        "ConnectionURL":"jdbc:oracle:thin:@10.1.110.128:1521:orcl",
+                        "Username":"qatest",
+                        "Password":"qatest",
+                        "BatchPolicy":"Count:0,Interval:0",
+                        "Tables": "dbo.mssqlsourcetbl,QATEST.ORACLETARGETTBL"
+                    }
+                }
+            }
+
+### Drop Application [DELETE]
+Deletes the application details along with source and target details. The application
+needs to be in undeployed state for this to succeed
+
++ Response 200 (application/json)
+
+    + Body 
+    
+            {
+            }
+        
++ Response  404 (plain/text)
+
+    + Headers
+
+            X-Message : "Application not found"
+
++ Response 412  (plain/text)
+
+    + Headers
+
+            X-Message : "Application not in undeployed state"
+
+
+## Replication Application Deployments [/replicationapp/{appname}/deployments]
+
+Represents a deployment of Replication Application
+
+### Retrieve Deployment options [GET]
+
+Retrieves Deployment option for this application
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "deploymentgroups" : [
+                    "agent",
+                    "default"
+                ]
+            }
+
+### Deploy [POST]
+
+Deploys a logical replication application to physical striim cluster , ready to be started
+
++ Request (application/json)
+        
+        {
+            "deploymentplan": {
+                "sourceflow":"agent",
+                "targetflow":"default",
+                "sourcedeployment":"ANY",
+                "targetdeployment":"ANY"
+            }
+        }
+        
++ Response 201 (plain/text)
+
+    + Headers
+
+            Location : /replicationapp/admin.OnPremiseOraToSqlServeronAzure/deployment/1234-0000-1234    
+        
+        
+### Undeploy Application [DELETE]
+
+Undeploys a physical deployment of replication application 
+
++ Response 201 (plain/text)
+    
+    + Headers
+    
+            X-Message: "Succesfully undeployed application"
+
+# Replication Application Deployment [/replicationapp/{appname}/deployment/{id}]
+
+### Start application [POST]
+
+Starts a deployed replication application to replicate from configured source to target
+
++ Response 201 (plain/text)
+    
+    + Headers
+    
+            X-Message: "Successfully started application"
+
+### Stop Application [DELETE]
+
+Stops a running replication
+
++ Response 200 (plain/text)
+    
+    + Headers
+    
+            X-Message: "Successfully stopped application"
+
+## Application Health [/replicationapp/{appname}/health]
+### Gets the Health of Running application [GET]
+
+Retrieves the health of a running replication application
+
++ Request (application/json)
+
++ Response 201 (application/json)
